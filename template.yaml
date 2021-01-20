@@ -35,7 +35,7 @@ Resources:
       Description: !Sub
         - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
         - ResourceName: process-notifications
-      CodeUri: api/endpoints
+      CodeUri: src
       Handler: notification_process.process_notifications
       Runtime: python3.7
       MemorySize: !Ref EnvConfiglambdamemorysizeAsString
