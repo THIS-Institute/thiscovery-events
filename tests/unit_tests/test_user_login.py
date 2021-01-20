@@ -17,10 +17,11 @@
 #
 import local.dev_config
 import local.secrets
-from thiscovery_dev_tools import testing_tools as test_tools
 import thiscovery_lib.notifications as notif
+from thiscovery_dev_tools import testing_tools as test_tools
 from thiscovery_lib.core_api_utilities import CoreApiClient
 
+import src.common.constants as const
 import src.user_login as ul
 import tests.test_data as td
 
@@ -41,12 +42,12 @@ class TestUserEvents(test_tools.BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        notif.delete_all_notifications()
+        notif.delete_all_notifications(stack_name=const.STACK_NAME)
 
     def test_record_user_login_ok(self):
         user_json = TEST_USER_01_JSON
         ul.record_user_login_event(td.SUCCESSFUL_LOGIN, None)
-        notifications = notif.get_notifications()
+        notifications = notif.get_notifications(stack_name=const.STACK_NAME)
         self.assertEqual(1, len(notifications))
 
         notification = notifications[0]
