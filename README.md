@@ -1,2 +1,2 @@
-# thiscovery-skeleton
-Template Thiscovery stack
+# thiscovery-events
+Thiscovery event processing
