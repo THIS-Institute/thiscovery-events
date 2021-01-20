@@ -50,12 +50,6 @@ Resources:
             SecretArn: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/${EnvironmentTagName}/*
         - DynamoDBCrudPolicy:
             TableName: !Ref tokens
-      VpcConfig:
-        SecurityGroupIds:
-          - !GetAtt VirtualNetwork.DefaultSecurityGroup
-        SubnetIds:
-          - !Ref VirtualNetworkPrivateSubnet1
-          - !Ref VirtualNetworkPrivateSubnet2
       Environment:
         Variables:
           TABLE_NAME: !Ref notifications
