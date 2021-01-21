@@ -29,11 +29,13 @@ from thiscovery_lib.hubspot_utilities import HubSpotClient
 from thiscovery_lib.notifications import get_notifications, NotificationType, NotificationStatus, NotificationAttributes, mark_notification_processed, mark_notification_failure
 from thiscovery_lib.utilities import get_logger, new_correlation_id, now_with_tz, DetailedValueError
 
+import common.constants as const
+
 
 # region processing
 def process_notifications(event, context):
     logger = get_logger()
-    notifications = c_notif.get_notifications_to_process()
+    notifications = c_notif.get_notifications_to_process(stack_name=const.STACK_NAME)
     logger.info('process_notifications', extra={'count': str(len(notifications))})
 
     # note that we need to process all registrations first, then do task signups (otherwise we might try to process a signup for someone not yet registered)
