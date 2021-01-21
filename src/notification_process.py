@@ -161,10 +161,10 @@ def process_user_login(notification):
         posting_result = hs_client.post_user_login_to_crm(login_details)
         logger.debug('Response from HubSpot API', extra={'posting_result': posting_result, 'correlation_id': correlation_id})
         if posting_result == http.HTTPStatus.NO_CONTENT:
-            marking_result = mark_notification_processed(notification, correlation_id)
+            marking_result = mark_notification_processed(notification, correlation_id, stack_name=const.STACK_NAME)
     except Exception as ex:
         error_message = str(ex)
-        marking_result = mark_notification_failure(notification, error_message, correlation_id)
+        marking_result = mark_notification_failure(notification, error_message, correlation_id, stack_name=const.STACK_NAME)
     finally:
         return posting_result, marking_result
 
@@ -201,14 +201,14 @@ def clear_notification_queue(event, context):
     correlation_id = event['correlation_id']
     seven_days_ago = now_with_tz() - timedelta(days=7)
     # processed_notifications = get_notifications('processing_status', ['processed'])
-    processed_notifications = c_notif.get_notifications_to_clear(datetime_threshold=seven_days_ago)
+    processed_notifications = c_notif.get_notifications_to_clear(datetime_threshold=seven_days_ago, stack_name=const.STACK_NAME)
     notifications_to_delete = [
         x for x in processed_notifications if 
         (parser.isoparse(x['modified']) < seven_days_ago) and 
         (x[NotificationAttributes.TYPE.value] != NotificationType.TRANSACTIONAL_EMAIL.value)
     ]
     deleted_notifications = list()
-    ddb_client = Dynamodb()
+    ddb_client = Dynamodb(stack_name=const.STACK_NAME)
     for n in notifications_to_delete:
         response = ddb_client.delete_item(c_notif.NOTIFICATION_TABLE_NAME, n['id'], correlation_id=correlation_id)
         if response['ResponseMetadata']['HTTPStatusCode'] == http.HTTPStatus.OK:
