@@ -65,4 +65,4 @@ class TestUserEvents(test_tools.BaseTestCase):
         self.assertEqual(notif.NotificationStatus.NEW.value, notification[notif.NotificationAttributes.STATUS.value])
         self.assertEqual(user_json['email'], notification['details']['email'])
         self.assertEqual(user_json['id'], notification['details']['id'])
-        self.now_datetime_test_and_remove(notification, 'created', tolerance=5)
+        self.now_datetime_test_and_remove(notification, 'created', tolerance=10)
