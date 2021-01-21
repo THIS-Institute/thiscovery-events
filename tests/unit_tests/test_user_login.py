@@ -18,8 +18,9 @@
 import local.dev_config
 import local.secrets
 import thiscovery_lib.notifications as notif
+import thiscovery_lib.utilities as utils
 from thiscovery_dev_tools import testing_tools as test_tools
-from thiscovery_lib.core_api_utilities import CoreApiClient
+from thiscovery_lib.lambda_utilities import Lambda
 
 import src.common.constants as const
 import src.user_login as ul
@@ -46,7 +47,15 @@ class TestUserEvents(test_tools.BaseTestCase):
 
     def test_record_user_login_ok(self):
         user_json = TEST_USER_01_JSON
-        ul.record_user_login_event(td.SUCCESSFUL_LOGIN, None)
+        if utils.running_on_aws():
+            lambda_client = Lambda(stack_name=const.STACK_NAME)
+            lambda_client.invoke(
+                function_name='RecordUserLogin',
+                invocation_type='Event',
+                payload=td.SUCCESSFUL_LOGIN,
+            )
+        else:
+            ul.record_user_login_event(td.SUCCESSFUL_LOGIN, None)
         notifications = notif.get_notifications(stack_name=const.STACK_NAME)
         self.assertEqual(1, len(notifications))
 
