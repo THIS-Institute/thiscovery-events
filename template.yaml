@@ -195,8 +195,8 @@ Resources:
       Description: !Sub
         - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
         - ResourceName: PersistEvent
-      CodeUri: src/Function
-      Handler: persist.persist_event
+      CodeUri: src
+      Handler: persist.persist_thiscovery_event
       Runtime: python3.7
       MemorySize: !Ref EnvConfiglambdamemorysizeAsString
       Timeout: !Ref EnvConfiglambdatimeoutAsString
@@ -207,21 +207,20 @@ Resources:
             SecretArn: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/${EnvironmentTagName}/*
         - DynamoDBCrudPolicy:
             TableName: !Ref Events
-      Environment:
-        Variables:
-          SECRETS_NAMESPACE: !Sub /${EnvironmentTagName}/
-          TABLE_NAME: !Ref Events
-          TABLE_ARN: !GetAtt Events.Arn
       Events:
         EventRule2:
           Type: EventBridgeRule
           Properties:
             Pattern:
               source:
-                - thiscovery
-            EventBusName: thiscovery-event-bus
+                - aws.health
           Metadata:
             StackeryName: PersistThiscoveryEvents
+      Environment:
+        Variables:
+          SECRETS_NAMESPACE: !Sub /${EnvironmentTagName}/
+          TABLE_NAME: !Ref Events
+          TABLE_ARN: !GetAtt Events.Arn
 Parameters:
   StackTagName:
     Type: String
