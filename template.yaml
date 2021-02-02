@@ -214,7 +214,7 @@ Resources:
           Properties:
             Pattern:
               source:
-                - aws.health
+                - thiscovery
           Metadata:
             StackeryName: PersistThiscoveryEvents
       Environment:
