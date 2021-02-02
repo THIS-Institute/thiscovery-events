@@ -31,8 +31,14 @@ def persist_thiscovery_event(event, context):
     ddb_client = Dynamodb(stack_name=const.STACK_NAME, correlation_id=event_id)
     detail_type = event['DetailType']
     event_time = event['Time']
+    event_detail = event['Detail']
     ddb_client.put_item(
         table_name=const.AUDIT_TABLE,
-
+        key=detail_type,
+        item_type=event_detail.get('event_type', 'thiscovery_event'),
+        item_details=event_detail,
+        item=dict(),
+        key_name='detail_type',
+        sort_key={'event_time': event_time},
     )
     return {"statusCode": HTTPStatus.OK, "body": json.dumps('')}
