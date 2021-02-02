@@ -15,5 +15,24 @@
 #   A copy of the GNU Affero General Public License is available in the
 #   docs folder of this project.  It is also available www.gnu.org/licenses/
 #
-STACK_NAME = 'thiscovery-events'
-AUDIT_TABLE = 'Events'
+import json
+from http import HTTPStatus
+import thiscovery_lib.utilities as utils
+import thiscovery_lib.notification_send as notif_send
+from thiscovery_lib.core_api_utilities import CoreApiClient
+from thiscovery_lib.dynamodb_utilities import Dynamodb
+
+import common.constants as const
+
+
+@utils.lambda_wrapper
+def persist_thiscovery_event(event, context):
+    event_id = event['id']  # note that event id will be used as correlation id for subsequent processing
+    ddb_client = Dynamodb(stack_name=const.STACK_NAME, correlation_id=event_id)
+    detail_type = event['DetailType']
+    event_time = event['Time']
+    ddb_client.put_item(
+        table_name=const.AUDIT_TABLE,
+
+    )
+    return {"statusCode": HTTPStatus.OK, "body": json.dumps('')}

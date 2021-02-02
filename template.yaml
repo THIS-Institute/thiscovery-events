@@ -233,6 +233,7 @@ Resources:
           KeyType: HASH
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-UnitTestData
   UnitTestDataSortKey:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -249,6 +250,7 @@ Resources:
           KeyType: RANGE
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-UnitTestDataSortKey
 Parameters:
   StackTagName:
     Type: String
