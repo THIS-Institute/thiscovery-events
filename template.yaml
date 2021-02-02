@@ -221,6 +221,34 @@ Resources:
           SECRETS_NAMESPACE: !Sub /${EnvironmentTagName}/
           TABLE_NAME: !Ref Events
           TABLE_ARN: !GetAtt Events.Arn
+  UnitTestData:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+  UnitTestDataSortKey:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: data_type
+          AttributeType: S
+        - AttributeName: data_sort
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: data_type
+          KeyType: HASH
+        - AttributeName: data_sort
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
 Parameters:
   StackTagName:
     Type: String
