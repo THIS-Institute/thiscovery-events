@@ -15,14 +15,17 @@
 #   A copy of the GNU Affero General Public License is available in the
 #   docs folder of this project.  It is also available www.gnu.org/licenses/
 #
+import json
 import thiscovery_lib.eb_utilities as eb
 import thiscovery_lib.utilities as utils
 from http import HTTPStatus
 
 
+@utils.lambda_wrapper
 @utils.api_error_handler
 def post_event(event, context):
-    thiscovery_event = eb.ThiscoveryEvent(event)
+    event_dict = json.loads(event['body'])
+    thiscovery_event = eb.ThiscoveryEvent(event_dict)
     eb_client = eb.EventbridgeClient()
     eb_client.put_event(
         thiscovery_event=thiscovery_event
