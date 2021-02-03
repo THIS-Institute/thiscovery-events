@@ -215,6 +215,7 @@ Resources:
             Pattern:
               source:
                 - thiscovery
+            EventBusName: !Ref EnvConfigeventbridgethiscoveryeventbusAsString
           Metadata:
             StackeryName: PersistThiscoveryEvents
       Environment:
@@ -271,8 +272,12 @@ Parameters:
   EnvironmentAPIGatewayStageName:
     Type: String
     Description: Environment name used for API Gateway Stage names (injected by Stackery at deployment time)
+  EnvConfigeventbridgethiscoveryeventbusAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/eventbridge/thiscovery-event-bus
 Metadata:
   EnvConfigParameters:
     EnvConfiglambdamemorysizeAsString: lambda.memory-size
     EnvConfiglambdatimeoutAsString: lambda.timeout
     EnvConfigeventbridgeauth0eventbusAsString: eventbridge.auth0-event-bus
+    EnvConfigeventbridgethiscoveryeventbusAsString: eventbridge.thiscovery-event-bus
