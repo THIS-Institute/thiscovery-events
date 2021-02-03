@@ -54,10 +54,9 @@ class TestEventPersistence(test_tools.BaseTestCase):
             }
         )
         self.eb_client.put_event(thiscovery_event=test_event)
-        time.sleep(5)
+        time.sleep(1)
         events = self.ddb_client.scan(
             table_name=const.AUDIT_TABLE
         )
         self.assertEqual(1, len(events))
-        from pprint import pprint
-        pprint(events[0])
+        self.assertEqual('f2fac677-cb2c-42a0-9fa6-494059352569', events[0]['details']['detail']['user_id'])
