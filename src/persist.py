@@ -29,9 +29,9 @@ import common.constants as const
 def persist_thiscovery_event(event, context):
     event_id = event['id']  # note that event id will be used as correlation id for subsequent processing
     ddb_client = Dynamodb(stack_name=const.STACK_NAME, correlation_id=event_id)
-    detail_type = event['DetailType']
-    event_time = event['Time']
-    event_detail = event['Detail']
+    detail_type = event['detail-type']
+    event_time = event['time']
+    event_detail = event['detail']
     ddb_client.put_item(
         table_name=const.AUDIT_TABLE,
         key=detail_type,
