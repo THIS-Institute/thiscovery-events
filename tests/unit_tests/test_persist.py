@@ -46,7 +46,7 @@ class TestEventPersistence(test_tools.BaseTestCase):
     def test_ddb_dump_ok(self):
         test_event = ThiscoveryEvent(
             event={
-                'detail_type': 'test_event',
+                'detail-type': 'test_event',
                 'detail': {
                     'appointment_id': 123456,
                     'user_id': 'f2fac677-cb2c-42a0-9fa6-494059352569',
@@ -59,4 +59,4 @@ class TestEventPersistence(test_tools.BaseTestCase):
             table_name=const.AUDIT_TABLE
         )
         self.assertEqual(1, len(events))
-        self.assertEqual('f2fac677-cb2c-42a0-9fa6-494059352569', events[0]['details']['detail']['user_id'])
+        self.assertEqual('f2fac677-cb2c-42a0-9fa6-494059352569', events[0]['details']['user_id'])
