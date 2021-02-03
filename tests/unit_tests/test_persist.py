@@ -30,7 +30,7 @@ import src.common.constants as const
 import src.user_login as ul
 
 
-class TestEventPersistance(test_tools.BaseTestCase):
+class TestEventPersistence(test_tools.BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
