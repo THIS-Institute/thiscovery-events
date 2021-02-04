@@ -27,7 +27,7 @@ from thiscovery_lib.eb_utilities import EventbridgeClient
 
 import src.common.constants as const
 import src.endpoints as ep
-
+from tests.test_data import test_event
 
 class TestPostEvent(test_tools.BaseTestCase):
 
@@ -43,13 +43,6 @@ class TestPostEvent(test_tools.BaseTestCase):
         cls.eb_client = EventbridgeClient()
 
     def test_post_event_ok(self):
-        test_event = {
-                'detail-type': 'test_event',
-                'detail': {
-                    'appointment_id': 123456,
-                    'user_id': 'f2fac677-cb2c-42a0-9fa6-494059352569',
-                }
-            }
         result = test_tools.test_post(
             local_method=ep.post_event,
             aws_url='/v1/event',
