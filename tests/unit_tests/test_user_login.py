@@ -52,10 +52,10 @@ class TestUserEvents(test_tools.BaseTestCase):
             lambda_client.invoke(
                 function_name='RecordUserLogin',
                 invocation_type='Event',
-                payload=td.SUCCESSFUL_LOGIN,
+                payload=SUCCESSFUL_LOGIN,
             )
         else:
-            ul.record_user_login_event(td.SUCCESSFUL_LOGIN, None)
+            ul.record_user_login_event(SUCCESSFUL_LOGIN, None)
         notifications = notif.get_notifications(stack_name=const.STACK_NAME)
         self.assertEqual(1, len(notifications))
 

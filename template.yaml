@@ -118,26 +118,6 @@ Resources:
       TableName: !Sub ${AWS::StackName}-tokens
     Metadata:
       StackeryName: Tokens
-  RaiseError:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-RaiseError
-      Description: !Sub
-        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: RaiseError
-      CodeUri: src
-      Handler: misc.raise_error
-      Runtime: python3.7
-      MemorySize: !Ref EnvConfiglambdamemorysizeAsString
-      Timeout: !Ref EnvConfiglambdatimeoutAsString
-      Tracing: Active
-      Policies:
-        - AWSXrayWriteOnlyAccess
-        - AWSSecretsManagerGetSecretValuePolicy:
-            SecretArn: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/${EnvironmentTagName}/*
-      Environment:
-        Variables:
-          SECRETS_NAMESPACE: !Sub /${EnvironmentTagName}/
   EventsApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -192,6 +172,87 @@ Resources:
       Environment:
         Variables:
           SECRETS_NAMESPACE: !Sub /${EnvironmentTagName}/
+  Events:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: detail_type
+          AttributeType: S
+        - AttributeName: event_time
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: detail_type
+          KeyType: HASH
+        - AttributeName: event_time
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-Events
+  PersistEvent:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-PersistEvent
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: PersistEvent
+      CodeUri: src
+      Handler: persist.persist_thiscovery_event
+      Runtime: python3.7
+      MemorySize: !Ref EnvConfiglambdamemorysizeAsString
+      Timeout: !Ref EnvConfiglambdatimeoutAsString
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/${EnvironmentTagName}/*
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Events
+      Events:
+        EventRule2:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              source:
+                - thiscovery
+            EventBusName: !Ref EnvConfigeventbridgethiscoveryeventbusAsString
+          Metadata:
+            StackeryName: PersistThiscoveryEvents
+      Environment:
+        Variables:
+          SECRETS_NAMESPACE: !Sub /${EnvironmentTagName}/
+          TABLE_NAME: !Ref Events
+          TABLE_ARN: !GetAtt Events.Arn
+  UnitTestData:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-UnitTestData
+  UnitTestDataSortKey:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: data_type
+          AttributeType: S
+        - AttributeName: data_sort
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: data_type
+          KeyType: HASH
+        - AttributeName: data_sort
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-UnitTestDataSortKey
 Parameters:
   StackTagName:
     Type: String
@@ -211,8 +272,12 @@ Parameters:
   EnvironmentAPIGatewayStageName:
     Type: String
     Description: Environment name used for API Gateway Stage names (injected by Stackery at deployment time)
+  EnvConfigeventbridgethiscoveryeventbusAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/eventbridge/thiscovery-event-bus
 Metadata:
   EnvConfigParameters:
     EnvConfiglambdamemorysizeAsString: lambda.memory-size
     EnvConfiglambdatimeoutAsString: lambda.timeout
     EnvConfigeventbridgeauth0eventbusAsString: eventbridge.auth0-event-bus
+    EnvConfigeventbridgethiscoveryeventbusAsString: eventbridge.thiscovery-event-bus
