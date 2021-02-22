@@ -25,6 +25,9 @@ from http import HTTPStatus
 @utils.api_error_handler
 def post_event(event, context):
     event_dict = json.loads(event['body'])
+    alarm_test = event_dict.get('brew_coffee')
+    if alarm_test:
+        raise utils.DeliberateError('Coffee is not available', details={})
     thiscovery_event = eb.ThiscoveryEvent(event_dict)
     eb_client = eb.EventbridgeClient()
     eb_client.put_event(
