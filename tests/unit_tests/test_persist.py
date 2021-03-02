@@ -59,4 +59,4 @@ class TestEventPersistence(test_tools.BaseTestCase):
             table_name=const.AUDIT_TABLE
         )
         self.assertEqual(1, len(events))
-        self.assertEqual('f2fac677-cb2c-42a0-9fa6-494059352569', events[0]['details']['user_id'])
+        self.assertEqual('f2fac677-cb2c-42a0-9fa6-494059352569', events[0]['detail']['user_id'])
