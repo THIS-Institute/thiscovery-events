@@ -18,8 +18,6 @@
 import json
 from http import HTTPStatus
 import thiscovery_lib.utilities as utils
-import thiscovery_lib.notification_send as notif_send
-from thiscovery_lib.core_api_utilities import CoreApiClient
 from thiscovery_lib.dynamodb_utilities import Dynamodb
 
 import common.constants as const
