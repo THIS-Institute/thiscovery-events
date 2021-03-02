@@ -216,6 +216,7 @@ Resources:
             Pattern:
               source:
                 - thiscovery
+                - qualtrics
             EventBusName: !Ref EnvConfigeventbridgethiscoveryeventbusAsString
           Metadata:
             StackeryName: PersistThiscoveryEvents
