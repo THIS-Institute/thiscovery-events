@@ -25,8 +25,12 @@ import common.constants as const
 
 @utils.lambda_wrapper
 def persist_thiscovery_event(event, context):
+    event.pop('logger', None)
+    event.pop('correlation_id', None)
     ddb_client = Dynamodb(stack_name=const.STACK_NAME, correlation_id=event['id'])
     table = ddb_client.get_table(table_name=const.AUDIT_TABLE)
     result = table.put_item(Item=event)
     assert result['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK
     return {"statusCode": HTTPStatus.OK, "body": json.dumps('')}
+
+
