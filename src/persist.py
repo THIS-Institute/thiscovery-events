@@ -27,18 +27,8 @@ import common.constants as const
 
 @utils.lambda_wrapper
 def persist_thiscovery_event(event, context):
-    event_id = event['id']  # note that event id will be used as correlation id for subsequent processing
-    ddb_client = Dynamodb(stack_name=const.STACK_NAME, correlation_id=event_id)
-    detail_type = event['detail-type']
-    event_time = event['time']
-    event_detail = event['detail']
-    ddb_client.put_item(
-        table_name=const.AUDIT_TABLE,
-        key=detail_type,
-        item_type=event_detail.get('event_type', 'thiscovery_event'),
-        item_details=event_detail,
-        item=dict(),
-        key_name='detail_type',
-        sort_key={'event_time': event_time},
-    )
+    ddb_client = Dynamodb(stack_name=const.STACK_NAME, correlation_id=event['id'])
+    table = ddb_client.get_table(table_name=const.AUDIT_TABLE)
+    result = table.put_item(Item=event)
+    assert result['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK
     return {"statusCode": HTTPStatus.OK, "body": json.dumps('')}
