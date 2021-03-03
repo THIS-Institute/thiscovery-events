@@ -25,16 +25,17 @@ from http import HTTPStatus
 @utils.api_error_handler
 def post_event(event, context):
     allowed_detail_types = [
-        'task_consent_accepted',
-        'task_consent_declined',
+        'survey_completed',
         'survey_started',
         'survey_user_agent',
-        'survey_completed',
+        'task_consent_accepted',
+        'task_consent_declined',
+        'test_event',
     ]
     event_dict = json.loads(event['body'])
     detail_type = event_dict.get('detail-type')
     if detail_type not in allowed_detail_types:
-        raise utils.DetailedValueError(f'Unsupported event type: {detail_type}', details={})
+        raise utils.DetailedValueError(f'Unsupported event type: {detail_type}', details={'event': event_dict})
     thiscovery_event = eb.ThiscoveryEvent(event_dict)
     eb_client = eb.EventbridgeClient()
     eb_client.put_event(
