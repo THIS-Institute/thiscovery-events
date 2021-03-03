@@ -24,7 +24,17 @@ from http import HTTPStatus
 @utils.lambda_wrapper
 @utils.api_error_handler
 def post_event(event, context):
+    allowed_detail_types = [
+        'task_consent_accepted',
+        'task_consent_declined',
+        'survey_started',
+        'survey_user_agent',
+        'survey_completed',
+    ]
     event_dict = json.loads(event['body'])
+    detail_type = event_dict.get('detail-type')
+    if detail_type not in allowed_detail_types:
+        raise utils.DetailedValueError(f'Unsupported event type: {detail_type}', details={})
     thiscovery_event = eb.ThiscoveryEvent(event_dict)
     eb_client = eb.EventbridgeClient()
     eb_client.put_event(
