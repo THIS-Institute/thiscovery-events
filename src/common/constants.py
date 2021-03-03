@@ -17,5 +17,5 @@
 #
 STACK_NAME = 'thiscovery-events'
 AUDIT_TABLE = 'Events'
-AUDIT_TABLE_HASH_KEY = 'detail_type'
-AUDIT_TABLE_SORT_KEY = 'event_time'
+AUDIT_TABLE_HASH_KEY = 'detail-type'
+AUDIT_TABLE_SORT_KEY = 'time'
