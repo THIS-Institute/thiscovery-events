@@ -20,6 +20,7 @@ import local.secrets
 import json
 import time
 
+from copy import deepcopy
 from http import HTTPStatus
 from thiscovery_dev_tools import testing_tools as test_tools
 from thiscovery_lib.dynamodb_utilities import Dynamodb
@@ -28,6 +29,7 @@ from thiscovery_lib.eb_utilities import EventbridgeClient
 import src.common.constants as const
 import src.endpoints as ep
 from tests.test_data import test_event
+
 
 class TestPostEvent(test_tools.BaseTestCase):
 
@@ -56,3 +58,13 @@ class TestPostEvent(test_tools.BaseTestCase):
         )
         self.assertEqual(1, len(events))
         self.assertEqual('f2fac677-cb2c-42a0-9fa6-494059352569', events[0]['details']['user_id'])
+
+    def test_post_forbidden_event_fails(self):
+        t_event = deepcopy(test_event)
+        t_event['detail-type'] = 'delete_all_users'
+        result = test_tools.test_post(
+            local_method=ep.post_event,
+            aws_url='/v1/event',
+            request_body=json.dumps(t_event),
+        )
+        self.assertEqual(HTTPStatus.BAD_REQUEST, result['statusCode'])
