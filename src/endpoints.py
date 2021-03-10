@@ -33,6 +33,9 @@ def post_event(event, context):
         'test_event',
     ]
     event_dict = json.loads(event['body'])
+    alarm_test = event_dict.get('brew_coffee')
+    if alarm_test:
+        raise utils.DeliberateError('Coffee is not available', details={})
     detail_type = event_dict.get('detail-type')
     if detail_type not in allowed_detail_types:
         raise utils.DetailedValueError(f'Unsupported event type: {detail_type}', details={'event': event_dict})
